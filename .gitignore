@@ -140,8 +140,19 @@ cython_debug/
 # Others
 .DS_Store
 **/.DS_Store
-
+/data
 # Typescript/Node
 **/node_modules
 
+# ML
+/results/
+/checkpoints/
+/runs/
+/logs/
+/saved_models/
+/output_dir/
+*.bin
+*.safetensors
+*.pt
+**/wandb/
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Python,typescript,ML
