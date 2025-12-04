@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import torch
 
 def compute_metrics(p):
     preds = np.argmax(p.predictions, axis=1)
@@ -9,25 +10,26 @@ def compute_metrics(p):
 def analyze_predictions(trainer, tokenized_test, raw_test):
     # Run predictions
     predictions = trainer.predict(tokenized_test)
+    logits = predictions.predictions
     y_pred = np.argmax(predictions.predictions, axis=1)
     y_true = predictions.label_ids
     texts = [ex['Text'] for ex in raw_test]
-
+    probs = torch.softmax(torch.tensor(logits), dim=1).numpy()
+    confidence = probs.max(axis=1)
+    
     # Create DataFrame
     df = pd.DataFrame({
         'text': texts,
         'true_label': y_true,
         'predicted_label': y_pred,
+        'confidence': confidence,
         'correct': y_true == y_pred
     })
 
     # Compute differences
     df['diff'] = df['predicted_label'] - df['true_label']
 
-    over_pred = df[df['diff'] > 0]
-    under_pred = df[df['diff'] < 0]
     correct_pred = df[df['diff'] == 0]
-    within_1 = df[np.abs(df['diff']) <= 1]
 
     # Compute test metrics
     test_loss = predictions.metrics.get("test_loss", None)
@@ -35,11 +37,7 @@ def analyze_predictions(trainer, tokenized_test, raw_test):
 
     metrics_summary = {
         'total_samples': len(df),
-        'over_predicted': len(over_pred),
-        'under_predicted': len(under_pred),
         'correct': len(correct_pred),
-        'within_1': len(within_1),
-        'within_1_pct': len(within_1)/len(df),
         'test_loss': test_loss,
         'test_accuracy': test_accuracy
     }

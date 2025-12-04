@@ -10,7 +10,7 @@ def tokenize_dataset(raw_datasets, model_checkpoint="roberta-base", max_length=1
             padding="max_length",
             max_length=max_length
         )
-        tokenized["labels"] = [score - 1 for score in examples["Score"]]
+        tokenized["labels"] = examples["Score"]
         return tokenized
 
     tokenized_datasets = raw_datasets.map(
