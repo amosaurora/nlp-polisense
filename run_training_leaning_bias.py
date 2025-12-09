@@ -31,6 +31,6 @@ trainer.train()
 metrics_summary, df_results = analyze_predictions(trainer, tokenized_datasets["test"], raw_datasets["test"])
 print(metrics_summary)
 
-save_dir = "saved_models/roberta_leaning_bias_result"
+save_dir = "saved_models/roberta_leaning_bias"
 trainer.save_model(save_dir)
 tokenizer.save_pretrained(save_dir)
